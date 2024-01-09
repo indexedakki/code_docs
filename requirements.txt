@@ -1,7 +1,6 @@
-torch --index-url https://download.pytorch.org/whl/cu121
-torchvision --index-url https://download.pytorch.org/whl/cu121
-torchaudio --index-url https://download.pytorch.org/whl/cu121
-bitsandbytes --prefer-binary --extra-index-url=https://jllllll.github.io/bitsandbytes-windows-webui
+torch
+torchaudio
+bitsandbytes
 accelerate==0.23.0
 fastapi
 pinecone-client
