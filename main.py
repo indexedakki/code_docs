@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
  
-@app.post("/")
+@app.get("/")
 def read_root():
     def fetch_github_files_recursive(github_link, file_regex=None):
         # Extract owner, repo, and branch from the GitHub link
