@@ -66,4 +66,4 @@ jobs:
         with:
           app-name: 'fastapipython3-10'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FF551D5BC6C44C8D8225551B2BB897A5 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F2D4F8E15389460DBDC3D0E75B3995B3 }}
