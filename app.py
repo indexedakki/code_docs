@@ -32,7 +32,7 @@ app.add_middleware(
 )
  
 @app.get("/")
-def read_root():
+def root():
     def fetch_github_files_recursive(github_link, file_regex=None):
         # Extract owner, repo, and branch from the GitHub link
         # Example link: https://github.com/owner/repo/tree/branch
