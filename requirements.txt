@@ -1,6 +1,6 @@
-nvidia-pyindex
-torch
-torchaudio
+torch --index-url https://download.pytorch.org/whl/cu121
+torchvision --index-url https://download.pytorch.org/whl/cu121
+torchaudio --index-url https://download.pytorch.org/whl/cu121
 bitsandbytes
 accelerate==0.23.0
 fastapi
