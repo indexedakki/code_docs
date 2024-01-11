@@ -14,7 +14,7 @@ from langchain.vectorstores import Pinecone
 from langchain.schema.document import Document
 from langchain import VectorDBQA, OpenAI
 import pinecone
- 
+ #ncodncvodn
 import requests
 import re
 import os
