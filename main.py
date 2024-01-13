@@ -31,8 +31,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
  
-@app.get("/")
-def root():
+@app.post("/")
+async def read_root(data: dict):
     def fetch_github_files_recursive(github_link, file_regex=None):
         # Extract owner, repo, and branch from the GitHub link
         # Example link: https://github.com/owner/repo/tree/branch
@@ -143,7 +143,9 @@ def root():
 
     def main():
         # Example usage:
-        github_link = 'https://github.com/indexedakki/Code-Documentation/tree/main'
+        link = data.get('data')
+        github_link = link +'/tree/main'
+        # github_link = 'https://github.com/indexedakki/Code-Documentation/tree/main'
         file_regex = [r'.*\.sql', r'.*\.py'] # Specify a regex pattern if needed
         files = fetch_github_files_recursive(github_link, file_regex)
 
@@ -184,6 +186,4 @@ def root():
 
         # return {"message": "Script executed successfully"}
         print(result)
-    if __name__ == "__main__":
-        import uvicorn
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+    main()
