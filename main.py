@@ -90,11 +90,11 @@ async def read_root(data: dict):
         #     load_in_8bit_fp32_cpu_offload=True,
         #     device_map={}
         # )
-        # model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1", config=config)
-        # tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1")
-        local_model_path = "D:/code_docs/models--mistralai--Mistral-7B-Instruct-v0.1"
-        model = AutoModelForCausalLM.from_pretrained(local_model_path, load_in_4bit=True, device_map='auto')
-        tokenizer = AutoTokenizer.from_pretrained(local_model_path)
+        model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1", config=config)
+        tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1")
+        # local_model_path = "D:/code_docs/models--mistralai--Mistral-7B-Instruct-v0.1"
+        # model = AutoModelForCausalLM.from_pretrained(local_model_path, load_in_4bit=True, device_map='auto')
+        # tokenizer = AutoTokenizer.from_pretrained(local_model_path)
         return model, tokenizer
 
     def create_text_generation_pipeline(model, tokenizer):
