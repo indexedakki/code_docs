@@ -32,7 +32,7 @@ app.add_middleware(
 )
  
 @app.post("/")
-async def read_root(data: dict):
+async def read_root(data: str):
     def fetch_github_files_recursive(github_link, file_regex=None):
         # Extract owner, repo, and branch from the GitHub link
         # Example link: https://github.com/owner/repo/tree/branch
