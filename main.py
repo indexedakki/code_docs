@@ -143,8 +143,9 @@ async def read_root(data: str):
 
     def main():
         # Example usage:
-        link = data.get('data')
-        github_link = link +'/tree/main'
+        # link = data.get('data')
+        # github_link = link +'/tree/main'
+        github_link = data+"/tree/main"
         # github_link = 'https://github.com/indexedakki/Code-Documentation/tree/main'
         file_regex = [r'.*\.sql', r'.*\.py'] # Specify a regex pattern if needed
         files = fetch_github_files_recursive(github_link, file_regex)
