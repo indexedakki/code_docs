@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
  
-@app.post("https://pypypy12.azurewebsites.net/")
+@app.post("/")
 async def read_root(data: dict):
     def fetch_github_files_recursive(github_link, file_regex=None):
         # Extract owner, repo, and branch from the GitHub link
