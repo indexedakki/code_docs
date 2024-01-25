@@ -7,7 +7,7 @@ torchaudio --index-url https://download.pytorch.org/whl/cu121
 bitsandbytes
 accelerate==0.23.0
 fastapi
-pinecone-client
+pinecone-client==2.1.0
 openai==0.28.0
 langchain
 requests
