@@ -14,13 +14,24 @@ from langchain.vectorstores import Pinecone
 from langchain.schema.document import Document
 from langchain import VectorDBQA, OpenAI
 import pinecone
- #ncodncvodn
+
 import requests
 import re
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler()
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
 app = FastAPI()
  
 app.add_middleware(
@@ -32,7 +43,7 @@ app.add_middleware(
 )
  
 @app.post("/")
-async def read_root(data: str):
+async def read_root(data: dict):
     def fetch_github_files_recursive(github_link, file_regex=None):
         # Extract owner, repo, and branch from the GitHub link
         # Example link: https://github.com/owner/repo/tree/branch
@@ -90,11 +101,11 @@ async def read_root(data: str):
         #     load_in_8bit_fp32_cpu_offload=True,
         #     device_map={}
         # )
-        model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1", config=config)
-        tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1")
-        # local_model_path = "D:/code_docs/models--mistralai--Mistral-7B-Instruct-v0.1"
-        # model = AutoModelForCausalLM.from_pretrained(local_model_path, load_in_4bit=True, device_map='auto')
-        # tokenizer = AutoTokenizer.from_pretrained(local_model_path)
+        # model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1", config=config)
+        # tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1")
+        local_model_path = "/home/site/wwwroot/mistral"
+        model = AutoModelForCausalLM.from_pretrained(local_model_path, load_in_4bit=True, device_map='auto')
+        tokenizer = AutoTokenizer.from_pretrained(local_model_path)
         return model, tokenizer
 
     def create_text_generation_pipeline(model, tokenizer):
@@ -134,19 +145,25 @@ async def read_root(data: str):
         return docsearch
 
     def initialize_conversational_retrieval_chain(llm, retriever):
-        chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, return_source_documents=True)
-        return chain
+        chain1 = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, return_source_documents=True)
+        return chain1
+
+    def similarity_search_retrieval_chain(llm):
+        retriever = docsearch.as_retriever(search_type ='similarity', search_kwargs = {'k': 3})
+        chain2 = RetrievalQA.from_chain_type(llm=llm, chain_type= "stuff", retriever= retriever)
+        return chain2
+
 
     def perform_question_answering(chain, query, chat_history):
         result = chain({"question": query, "chat_history": chat_history})
         return result['answer']
 
     def main():
-        # Example usage:
-        # link = data.get('data')
-        # github_link = link +'/tree/main'
-        github_link = data+"/tree/main"
-        # github_link = 'https://github.com/indexedakki/Code-Documentation/tree/main'
+        logger.info(f'Inside main')
+     
+        link = data.get('data')
+        github_link = link +"/tree/main"
+     
         file_regex = [r'.*\.sql', r'.*\.py'] # Specify a regex pattern if needed
         files = fetch_github_files_recursive(github_link, file_regex)
 
@@ -158,6 +175,7 @@ async def read_root(data: str):
 
         device = initialize_device()
         model, tokenizer = configure_model()
+        logger.info(f'Model stored')
         #tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.1")
         text_generation_pipeline = create_text_generation_pipeline(model, tokenizer)
         mistral_llm = create_huggingface_pipeline(text_generation_pipeline)
@@ -167,8 +185,9 @@ async def read_root(data: str):
         os.environ["OPENAI_API_BASE"] = "https://trail-outcome.openai.azure.com/"
         os.environ["OPENAI_API_KEY"] = "b59f23e204b3426c9dbe1f6741b80acb"
 
-        loader = TextLoader("/Workspace/Users/admin@m365x99442612.onmicrosoft.com/Code Documentation POC/Akash/documentation.txt")
-        document1 = loader.load()
+        # loader = TextLoader("/Workspace/Users/admin@m365x99442612.onmicrosoft.com/Code Documentation POC/Akash/documentation.txt")
+        # document1 = loader.load()
+     
 
         string_variable = files[0]['content']
         document = create_document(string_variable)
@@ -177,14 +196,18 @@ async def read_root(data: str):
 
         embeddings = setup_openai_embeddings()
         initialize_pinecone()
-        docsearch = setup_pinecone_index(embeddings, texts, index_name="code-documentation-index")
+        docsearch = setup_pinecone_index(embeddings, texts, index_name="pinecone")
+        logger.info(f'Pinecone set')
 
-        chain = initialize_conversational_retrieval_chain(llm=mistral_llm, retriever=docsearch.as_retriever())
+        chain1 = initialize_conversational_retrieval_chain(llm=mistral_llm, retriever=docsearch.as_retriever())
+
+        chain2 = similartity_search_retrieval_chain(llm=mistral_llm)
 
         chat_history = []
         query = "what the above code does"
-        result = perform_question_answering(chain, query, chat_history)
+        result = perform_question_answering(chain2, query, chat_history)
 
+        logging.info(f'Result Generated')
         # return {"message": "Script executed successfully"}
         print(result)
     main()
